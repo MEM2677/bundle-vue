@@ -40,4 +40,3 @@ class WidgetElement extends HTMLElement {
 }
 
 customElements.define('simple-mfe', WidgetElement);
-

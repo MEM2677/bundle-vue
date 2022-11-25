@@ -5,52 +5,51 @@
     <link rel="icon" href="/favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Vite App</title>
+    <script src="http://localhost:9080/auth/js/keycloak.js"></script>
+    <script>
+        const onLoad = (function() {
+            function createKcDispatcher(payload) {
+                return () => window.dispatchEvent(new CustomEvent('keycloak', { detail: payload }));
+            }
 
-      <script src="http://localhost:9080/auth/js/keycloak.js"></script>
-      <script>
-          const onLoad = (function() {
-              function createKcDispatcher(payload) {
-                  return () => window.dispatchEvent(new CustomEvent('keycloak', { detail: payload }));
-              }
+            function initKeycloak() {
+                const keycloak = Keycloak({
+                    url: 'http://localhost:9080/auth',
+                    realm: 'entando-dev',
+                    clientId: 'web_app'
+                });
 
-              function initKeycloak() {
-                  const keycloak = Keycloak({
-                      url: 'http://localhost:9080/auth',
-                      realm: 'entando-dev',
-                      clientId: 'web_app'
-                  });
+                keycloak.onReady = createKcDispatcher({ eventType: 'onReady' });
+                keycloak.onAuthSuccess = createKcDispatcher({ eventType: 'onAuthSuccess' });
+                keycloak.onAuthError = createKcDispatcher({ eventType: 'onAuthError' });
+                keycloak.onAuthRefreshSuccess = createKcDispatcher({
+                    eventType: 'onAuthRefreshSuccess'
+                });
+                keycloak.onAuthRefreshError = createKcDispatcher({
+                    eventType: 'onAuthRefreshError'
+                });
+                keycloak.onAuthLogout = createKcDispatcher({ eventType: 'onAuthLogout' });
+                keycloak.onTokenExpired = createKcDispatcher({ eventType: 'onTokenExpired' });
+                const onInit = createKcDispatcher({ eventType: 'onInit' });
 
-                  keycloak.onReady = createKcDispatcher({ eventType: 'onReady' });
-                  keycloak.onAuthSuccess = createKcDispatcher({ eventType: 'onAuthSuccess' });
-                  keycloak.onAuthError = createKcDispatcher({ eventType: 'onAuthError' });
-                  keycloak.onAuthRefreshSuccess = createKcDispatcher({
-                      eventType: 'onAuthRefreshSuccess'
-                  });
-                  keycloak.onAuthRefreshError = createKcDispatcher({
-                      eventType: 'onAuthRefreshError'
-                  });
-                  keycloak.onAuthLogout = createKcDispatcher({ eventType: 'onAuthLogout' });
-                  keycloak.onTokenExpired = createKcDispatcher({ eventType: 'onTokenExpired' });
-                  const onInit = createKcDispatcher({ eventType: 'onInit' });
+                window.entando = {
+                    ...(window.entando || {}),
+                    keycloak
+                };
 
-                  window.entando = {
-                      ...(window.entando || {}),
-                      keycloak
-                  };
+                //If you are locally running the widget in isolation and you are not logged in,
+                //you are automatically redirected to keycloak login page to speed up development.
 
-                  //If you are locally running the widget in isolation and you are not logged in,
-                  //you are automatically redirected to keycloak login page to speed up development.
+                // const onLoad = window.location.hostname === 'localhost' ? 'login-required' : 'check-sso';
+                const onLoad = 'login-required';
+                //const silentCheckSsoRedirectUri = window.location.origin + '/silent-check-sso.html';
 
-                  // const onLoad = window.location.hostname === 'localhost' ? 'login-required' : 'check-sso';
-                  const onLoad = 'login-required';
-                  //const silentCheckSsoRedirectUri = window.location.origin + '/silent-check-sso.html';
+                window.entando.keycloak.init({ onLoad }).success(onInit);
 
-                  window.entando.keycloak.init({ onLoad }).success(onInit);
-
-              }
-              return initKeycloak;
-          })();
-      </script>
+            }
+            return initKeycloak;
+        })();
+    </script>
   </head>
   <body onLoad="onLoad();" class="home-localhost">
   <div id="app">
@@ -58,13 +57,13 @@
   </div>
     <script type="module" src="/src/main.js"></script>
     <!-- inietta sul costom elem la configurazione sul file public/mfe-config (SOLO PER SVILUPPO in prod è automatico) -->
-    <script>
+    <script type="module">
       function injectConfigIntoMfe() {
         fetch('/mfe-config.json').then(async response => {
-          const config = await response.json()
-          const anotherMfeEl = document.getElementsByTagName('my-vue-element')[0]
-          anotherMfeEl.setAttribute('config', config)
-          console.log(anotherMfeEl);
+          const config = await response.text();
+          const element = document.querySelector('my-vue-element');
+
+          element.setAttribute('config', config);
         })
       }
 
