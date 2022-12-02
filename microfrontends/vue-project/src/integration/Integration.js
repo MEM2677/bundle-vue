@@ -1,6 +1,5 @@
 import axios from "axios";
 
-
 function getDefaultOptions() {
     const token = getKeycloakToken()
     if (!token) return {}

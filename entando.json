@@ -8,40 +8,6 @@
     ],
     "microfrontends": [
         {
-            "name": "simple-mfe",
-            "customElement": "simple-mfe",
-            "stack": "react",
-            "type": "widget",
-            "group": "free",
-            "publicFolder": "public",
-            "titles": {
-                "en": "simple-mfe",
-                "it": "simple-mfe"
-            },
-            "configMfe": "simple-mfe-config",
-            "params": [
-                {
-                    "name": "name",
-                    "description": "The name for Hello World"
-                }
-            ],
-            "apiClaims": [
-                {
-                    "name": "simple-node-api",
-                    "type": "internal",
-                    "serviceName": "simple-node-ms"
-                }
-            ]
-        },
-        {
-            "name": "simple-mfe-config",
-            "customElement": "simple-mfe-config",
-            "stack": "react",
-            "type": "widget-config",
-            "group": "free",
-            "publicFolder": "public"
-        },
-        {
             "name": "vue-project",
             "customElement": "my-vue-element",
             "stack": "custom",
@@ -71,7 +37,7 @@
         "keycloak"
     ],
     "name": "test-vue",
-    "version": "0.0.1",
+    "version": "0.0.3",
     "description": "test-vue description",
     "type": "bundle"
 }
